@@ -5,8 +5,8 @@ A game based on [Dots](https://www.youtube.com/watch?v=2X1s4aMSUrE) but with a h
 ## Gameplay
 
 * Click and drag from a dot start a line.
-* Chain dots of similar color to clear them from the board.
-* Creating a loop of dots with clear all dots of that color.
+* Chain adjacent dots of similar color to clear them from the board.
+* Creating a loop of dots will clear all dots of that color.
 * How high of a score can you get within the time limit?
 
 ![](gameplay.gif)
