@@ -3,6 +3,7 @@ export const GameConfig = {
         NumOfDotColors: 5,
         NumOfGridRows: 6,
         NumOfGridColumns: 6,
+        DotScale: 0.3
     },
     Gameplay: {
         MinLoopAmount: 3,

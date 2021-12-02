@@ -4,7 +4,7 @@ import ScoreKeeper from '../core/scoreKeeper';
 import { GameConfig } from '../Core/gameConfig'
 import UiHandler, { UiState } from '../core/uiHandler';
 
-import BackgroundTexturePath from './../assets/background4.png';
+import BackgroundTexturePath from './../assets/background5.png';
 import DotTexturePath from './../assets/dot.png';
 
 const GameState = {
@@ -36,7 +36,7 @@ export default class GameScene extends Phaser.Scene {
             numRows: GameConfig.Grid.NumOfGridRows,
             numColumns: GameConfig.Grid.NumOfGridColumns,
             numOfDotColors: GameConfig.Grid.NumOfDotColors,
-            dotScale: 0.3
+            dotScale: GameConfig.Grid.DotScale,
         };
         this.dotGrid = new DotGrid(this, this.gridConfig);
     }
@@ -66,12 +66,14 @@ export default class GameScene extends Phaser.Scene {
     }
 
     endGame() {
+        this.gameState = GameState.Paused;
         this.dotGrid.pauseRefill();
         this.dotGrid.explodeClear();
-        this.gameState = GameState.Paused;
         this.resetSelection();
         this.gameTimer.paused = true;
-        this.uiHandler.setUiState(UiState.GameOver);
+        this.time.delayedCall(550, () => {
+            this.uiHandler.setUiState(UiState.GameOver);
+        }, null, this);
     }
 
     restartGameTimer() {
@@ -120,7 +122,7 @@ export default class GameScene extends Phaser.Scene {
         let emitter = this.particles.createEmitter({
             x: x,
             y: y,
-            speed: { min: 75, max: 175 },
+            speed: { min: 125, max: 225 },
             scale: { start: 0.2, end: 0.1 },
             maxParticles: 15,
             lifespan: 350,

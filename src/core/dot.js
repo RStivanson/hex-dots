@@ -3,12 +3,12 @@ const Color = Phaser.Display.Color;
 
 export const DotColors = [
     { id: 'red', color: Color.HexStringToColor('#bd2031') },
-    { id: 'green', color: Color.HexStringToColor('#228b22') },
+    { id: 'green', color: Color.HexStringToColor('#298129') },
     { id: 'blue', color: Color.HexStringToColor('#004999') },
     { id: 'purple', color: Color.HexStringToColor('#421c52') },
     { id: 'brown', color: Color.HexStringToColor('#82633a') },
-    { id: 'pink', color: Color.HexStringToColor('#f85084') },
-    { id: 'gold', color: Color.HexStringToColor('#ffd700') },
+    { id: 'pink', color: Color.HexStringToColor('#E85381') },
+    { id: 'gold', color: Color.HexStringToColor('#D8B807') },
     { id: 'orange', color: Color.HexStringToColor('#be5504') },
 ];
 
@@ -45,7 +45,7 @@ export default class Dot extends Phaser.GameObjects.Image {
         let color = this.colorData.color;
         let tintColor = new Phaser.Display.Color(color.red, color.green, color.blue, color.alpha);
         if (this.selected || this.lightenedTint)
-            tintColor.lighten(20);
+            tintColor.lighten(15);
         return tintColor;
     }
 
