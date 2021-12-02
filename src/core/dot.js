@@ -13,12 +13,12 @@ export const DotColors = [
 ];
 
 export default class Dot extends Phaser.GameObjects.Image {
-    constructor(scene, x, y, scale = 0.3) {
+    constructor(scene, x, y, scale) {
         super(scene, x, y, 'dot');
 
         scene.add.existing(this);
         this.visible = false;
-
+ 
         this.scale = scale;
         this.setScale(this.scale);
         this.tweenTime = 0;

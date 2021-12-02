@@ -25,7 +25,7 @@ export default class GameScene extends Phaser.Scene {
                 this.beginGame();
             },
             onExitButtonClicked: () => {
-                console.log('Game exited');
+                this.uiHandler.setUiState(UiState.Exited);
             }
         });
         this.gridConfig = {
@@ -67,7 +67,7 @@ export default class GameScene extends Phaser.Scene {
 
     endGame() {
         this.dotGrid.pauseRefill();
-        this.dotGrid.slowClear();
+        this.dotGrid.explodeClear();
         this.gameState = GameState.Paused;
         this.resetSelection();
         this.gameTimer.paused = true;

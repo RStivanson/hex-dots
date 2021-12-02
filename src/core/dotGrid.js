@@ -59,7 +59,7 @@ export default class DotGrid {
         }
     }
 
-    slowClear() {
+    explodeClear() {
         for (let row = 0; row < this.grid.length; row++) {
             for (let col = 0; col < this.grid[row].length; col++) {
                 let dot = this.grid[row][col].dot;

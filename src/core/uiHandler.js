@@ -7,6 +7,7 @@ export const UiState = {
     None: 0,
     Hud: 1,
     GameOver: 2,
+    Exited: 3,
 };
 
 export default class UiHandler {
@@ -22,6 +23,8 @@ export default class UiHandler {
         this.timerText = this.scene.add.text(75, 30, 'Time: 0:00.00', this.getHudStyle()).setDepth(DefaultUiDepth);
         this.timesUpText = this.scene.add.text(this.halfScreenWidth, this.halfScreenHeight - 60, 'Time\'s up!', this.getGameOverHeaderStyle()).setDepth(DefaultUiDepth).setOrigin(0.5);
         this.gameOverScore = this.scene.add.text(this.halfScreenWidth, this.halfScreenHeight - 10, 'Final Score: 0', this.getGameOverStyle()).setDepth(DefaultUiDepth).setOrigin(0.5);
+
+        this.exitedText = this.scene.add.text(this.halfScreenWidth, this.halfScreenHeight - 60, 'Game Exited!', this.getGameOverHeaderStyle()).setDepth(DefaultUiDepth).setOrigin(0.5);
 
         this.restartButton = new Button(this.scene, {
             x: this.halfScreenWidth,
@@ -50,6 +53,7 @@ export default class UiHandler {
 
         this.hideHud();
         this.hideGameOver();
+        this.hideExited();
 
         switch (state) {
             case UiState.Hud:
@@ -57,6 +61,9 @@ export default class UiHandler {
                 break;
             case UiState.GameOver:
                 this.showGameOver();
+                break;
+            case UiState.Exited:
+                this.showExited();
                 break;
         }
     }
@@ -116,5 +123,13 @@ export default class UiHandler {
         this.gameOverScore.setVisible(false);
         this.restartButton.setVisible(false);
         this.exitButton.setVisible(false);
+    }
+
+    showExited() {
+        this.exitedText.setVisible(true);
+    }
+
+    hideExited() {
+        this.exitedText.setVisible(false);
     }
 }
