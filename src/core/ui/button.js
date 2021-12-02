@@ -23,7 +23,7 @@ export default class Button {
 
     onPressed() {
         if (this.config.onClickEvent) {
-            this.config.onClickEvent();
+            this.config.onClickEvent(this.scene);
         }
     }
 }

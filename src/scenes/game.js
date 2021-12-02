@@ -1,11 +1,8 @@
-import Phaser from 'phaser'
-import DotGrid from '../core/dotGrid'
+import Phaser from 'phaser';
+import DotGrid from '../core/dotGrid';
 import ScoreKeeper from '../core/scoreKeeper';
-import { GameConfig } from '../Core/gameConfig'
-import UiHandler, { UiState } from '../core/uiHandler';
-
-import BackgroundTexturePath from './../assets/background5.png';
-import DotTexturePath from './../assets/dot.png';
+import { GameConfig } from '../Core/gameConfig';
+import HudUiHandler from '../core/ui/handlers/hudUiHandler';
 
 const GameState = {
     Playing: 0,
@@ -13,21 +10,15 @@ const GameState = {
 }
 
 export default class GameScene extends Phaser.Scene {
-    preload() {
-        this.load.image('background', BackgroundTexturePath);
-        this.load.image('dot', DotTexturePath);
+    constructor() {
+        super('game');
+    }
 
+    preload() {
         this.input.on('pointerup', () => this.onPointerUp());
 
         this.scoreKeeper = new ScoreKeeper(GameConfig.Gameplay.ScorePerDot, GameConfig.Gameplay.ScoreLoopMultiplier);
-        this.uiHandler = new UiHandler(this, this.sys.game.canvas, {
-            onRestartButtonClicked: () => {
-                this.beginGame();
-            },
-            onExitButtonClicked: () => {
-                this.uiHandler.setUiState(UiState.Exited);
-            }
-        });
+        this.uiHandler = new HudUiHandler(this, this.sys.game.canvas, {});
         this.gridConfig = {
             x: 75,
             y: 140,
@@ -62,7 +53,6 @@ export default class GameScene extends Phaser.Scene {
         this.resetSelection();
         this.restartGameTimer();
         this.gameState = GameState.Playing;
-        this.uiHandler.setUiState(UiState.Hud);
     }
 
     endGame() {
@@ -71,8 +61,9 @@ export default class GameScene extends Phaser.Scene {
         this.dotGrid.explodeClear();
         this.resetSelection();
         this.gameTimer.paused = true;
+        this.uiHandler.hide();
         this.time.delayedCall(550, () => {
-            this.uiHandler.setUiState(UiState.GameOver);
+            this.scene.start('gameOver', { finalScore: this.scoreKeeper.score });
         }, null, this);
     }
 
