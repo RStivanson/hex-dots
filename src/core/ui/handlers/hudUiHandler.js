@@ -16,8 +16,8 @@ export default class HudUiHandler {
         const halfScreenWidth = canvas.width / 2;
         const halfScreenHeight = canvas.height / 2;
 
-        this.scoreText = this.scene.add.text(halfScreenWidth + 120, 30, 'Score: 0', this.getStyle()).setDepth(DefaultUiDepth);
-        this.timerText = this.scene.add.text(75, 30, 'Time: 0:00.00', this.getStyle()).setDepth(DefaultUiDepth);
+        this.scoreText = this.scene.add.text(75, 30, 'Score: 0', this.getStyle()).setDepth(DefaultUiDepth);
+        this.timerText = this.scene.add.text(halfScreenWidth + 140, 30, 'Time: 0:00.00', this.getStyle()).setDepth(DefaultUiDepth);
     }
 
     update(scoreKeeper, timer) {
