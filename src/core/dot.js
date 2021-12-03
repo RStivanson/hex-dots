@@ -80,7 +80,6 @@ export default class Dot extends Phaser.GameObjects.Image {
     }
 
     disable(explodeEffect = false) {
-        this.visible = false;
         this.scene.tweens.add({
             targets: this,
             scaleX: { from: this.scale, to: 0 },
