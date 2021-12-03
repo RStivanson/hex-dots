@@ -22,7 +22,12 @@ export default class HudUiHandler {
 
     update(scoreKeeper, timer) {
         this.scoreText.text = 'Score: ' + scoreKeeper.score;
-        this.timerText.text = 'Timer: ' + ((GameConfig.Gameplay.GameLengthTime - timer.getElapsed()) / 1000).toFixed(0);
+
+        let elapsedTime = '-';
+        if (timer) {
+            elapsedTime = ((GameConfig.Gameplay.GameLengthTime - timer.getElapsed()) / 1000).toFixed(0);
+        }
+        this.timerText.text = 'Timer: ' + elapsedTime;
     }
 
     getStyle() {

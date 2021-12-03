@@ -10,6 +10,6 @@ export const GameConfig = {
         MinLineCompletionAmount: 2,
         ScorePerDot: 5,
         ScoreLoopMultiplier: 3,
-        GameLengthTime: 30000,
+        GameLengthTime: -1, // -1 for infinite
     }
 }

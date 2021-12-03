@@ -60,14 +60,22 @@ export default class GameScene extends Phaser.Scene {
         this.dotGrid.pauseRefill();
         this.dotGrid.explodeClear();
         this.resetSelection();
-        this.gameTimer.paused = true;
+        this.pauseGameTimer();
         this.uiHandler.hide();
         this.time.delayedCall(550, () => {
             this.scene.start('gameOver', { finalScore: this.scoreKeeper.score });
         }, null, this);
     }
 
+    pauseGameTimer() {
+        if (this.gameTimer)
+            this.gameTimer.paused = true;
+    }
+
     restartGameTimer() {
+        if (GameConfig.Gameplay.GameLengthTime === -1)
+            return;
+
         let timerConfig = {
             delay: GameConfig.Gameplay.GameLengthTime,
             callback: this.endGame,
