@@ -59,13 +59,23 @@ export default class DotGrid {
         }
     }
 
-    explodeClear() {
+    explodeClear(refill = false) {
         for (let row = 0; row < this.grid.length; row++) {
             for (let col = 0; col < this.grid[row].length; col++) {
                 let dot = this.grid[row][col].dot;
-                if (dot)
+                if (dot) {
                     dot.disable(true);
+                    dot.destroy();
+                }
+                this.grid[row][col].dot = null;
             }
+        }
+        
+        if (this.canRefill && refill) {
+            if (this.refillTimer) {
+                this.refillTimer.remove();
+            }
+            this.refillTimer = this.scene.time.delayedCall(DefaultRefillTimeDelay, this.refillGrid, null, this);
         }
     }
 
@@ -226,6 +236,67 @@ export default class DotGrid {
         return false;
     }
 
+    getNeighbors(row, col) {
+        const neighbors = [];
+        const isOddRow = row % 2 == 1;
+
+        const topLeft = { row: row - 1, column: col - (isOddRow ? 0 : 1) };
+        const topRight = { row: row - 1, column: col + (isOddRow ? 1 : 0) };
+        const left = { row: row, column: col - 1 };
+        const right = { row: row, column: col + 1 };
+        const bottomLeft = { row: row + 1, column: col - (isOddRow ? 0 : 1) };
+        const bottomRight = { row: row + 1, column: col + (isOddRow ? 1 : 0) };
+
+        // top left / right
+        if (row > 0) {
+            if (col == 0) {
+                if (isOddRow) {
+                    neighbors.push(topLeft, topRight);
+                } else {
+                    neighbors.push(topRight);
+                }
+            } else if (col == this.config.numColumns - 1) {
+                if (isOddRow) {
+                    neighbors.push(topLeft);
+                } else {
+                    neighbors.push(topLeft, topRight);
+                }
+            } else {
+                neighbors.push(topLeft, topRight);
+            }
+        }
+
+        // left / right
+        if (col == 0) {
+            neighbors.push(right);
+        } else if (col == this.config.numColumns - 1) {
+            neighbors.push(left);
+        } else {
+            neighbors.push(left, right);
+        }
+        
+        // bottom left / right
+        if (row < this.config.numRows - 1) {
+            if (col == 0) {
+                if (isOddRow) {
+                    neighbors.push(bottomLeft, bottomRight);
+                } else {
+                    neighbors.push(bottomRight);
+                }
+            } else if (col == this.config.numColumns - 1) {
+                if (isOddRow) {
+                    neighbors.push(bottomLeft);
+                } else {
+                    neighbors.push(bottomLeft, bottomRight);
+                }
+            } else {
+                neighbors.push(bottomLeft, bottomRight);
+            }
+        }
+
+        return neighbors;
+    }
+
     setColorIdLightened(id, flag) {
         for (let row = this.grid.length - 1; row >= 0; row--) {
             for (let col = 0; col < this.grid[row].length; col++) {
@@ -233,6 +304,15 @@ export default class DotGrid {
                 if (cell.dot && cell.dot.colorData.id == id) {
                     cell.dot.setLightenedTint(flag);
                 }
+            }
+        }
+    }
+
+    setColorsFlowered(flag) {
+        for (let row = this.grid.length - 1; row >= 0; row--) {
+            for (let col = 0; col < this.grid[row].length; col++) {
+                let cell = this.grid[row][col];
+                cell.dot.setIsFlowered(flag);
             }
         }
     }

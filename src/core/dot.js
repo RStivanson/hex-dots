@@ -44,7 +44,7 @@ export default class Dot extends Phaser.GameObjects.Image {
     getEffectiveTint() {
         let color = this.colorData.color;
         let tintColor = new Phaser.Display.Color(color.red, color.green, color.blue, color.alpha);
-        if (this.selected || this.lightenedTint)
+        if (this.selected || this.lightenedTint || this.isFlowered)
             tintColor.lighten(15);
         return tintColor;
     }
@@ -55,6 +55,11 @@ export default class Dot extends Phaser.GameObjects.Image {
 
     setLightenedTint(flag) {
         this.lightenedTint = flag;
+        this.refreshTint();
+    }
+
+    setIsFlowered(flag) {
+        this.isFlowered = flag;
         this.refreshTint();
     }
 

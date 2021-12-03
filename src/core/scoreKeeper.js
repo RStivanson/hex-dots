@@ -1,12 +1,13 @@
 export default class ScoreKeeper {
-    constructor(scorePerDot, loopMultiplier) {
+    constructor(scorePerDot, loopMultiplier, flowerMultiplier) {
         this.scorePerDot = scorePerDot;
         this.loopMultiplier = loopMultiplier;
+        this.flowerMultiplier = flowerMultiplier;
         this.reset();
     }
 
-    addScore(dotList, isLoop) {
-        let delta = this.calculateScore(dotList, isLoop);
+    addScore(dotList, isLoop, isFlower) {
+        let delta = this.calculateScore(dotList, isLoop, isFlower);
         this.score += delta;
     }
 
@@ -14,11 +15,16 @@ export default class ScoreKeeper {
         this.score = 0;
     }
 
-    calculateScore(dotList, isLoop) {
+    calculateScore(dotList, isLoop, isFlower) {
         if (!dotList || dotList.length == 0)
             return 0;
 
-        let loopMultiplier = isLoop ? this.loopMultiplier : 1;
-        return dotList.length * this.scorePerDot * loopMultiplier;
+        let multiplier = 1;
+        if (isFlower) {
+            multiplier = this.flowerMultiplier;
+        } else if (isLoop) {
+            multiplier = this.loopMultiplier;
+        }
+        return dotList.length * this.scorePerDot * multiplier;
     }
 }

@@ -17,7 +17,7 @@ export default class GameScene extends Phaser.Scene {
     preload() {
         this.input.on('pointerup', () => this.onPointerUp());
 
-        this.scoreKeeper = new ScoreKeeper(GameConfig.Gameplay.ScorePerDot, GameConfig.Gameplay.ScoreLoopMultiplier);
+        this.scoreKeeper = new ScoreKeeper(GameConfig.Gameplay.ScorePerDot, GameConfig.Gameplay.ScoreLoopMultiplier, GameConfig.Gameplay.ScoreFlowerMultiplier);
         this.uiHandler = new HudUiHandler(this, this.sys.game.canvas, {});
         this.gridConfig = {
             x: 75,
@@ -134,6 +134,7 @@ export default class GameScene extends Phaser.Scene {
             dots: [],
             colorId: null,
             isLoop: false,
+            isFlower: false,
         };
     }
 
@@ -144,6 +145,49 @@ export default class GameScene extends Phaser.Scene {
 
         this.selection.dots.push(dot);
         dot.select();
+    }
+
+    isDotListAFlower(dotList, isLoop) {
+        if (dotList.length !== 7) 
+            return false;
+        if (!isLoop)
+            return false;
+        
+        const updatePosKeyInMap = (map, find) => {
+            let updated = false;
+            map.forEach((value, key) => {
+                if (key.row === find.row && key.column === find.column) {
+                    map.set(key, value + 1);
+                    updated = true;
+                }
+            })
+            return updated;
+        };
+
+        const sharedNeighbors = new Map();
+        for (let i = 0; i < dotList.length; i++) {
+            const dot = dotList[i];
+            const neighbors = this.dotGrid.getNeighbors(dot.row, dot.column);
+
+            if (i == 0) {
+                neighbors.forEach(x => {
+                    sharedNeighbors.set(x, 1)
+                });
+            } else {
+                neighbors.forEach(x => {
+                    if (!updatePosKeyInMap(sharedNeighbors, x)) {
+                        sharedNeighbors.set(x, 1);
+                    }
+                })
+            }
+        }
+
+        let isFlower = false;
+        sharedNeighbors.forEach((value, key) => {
+            if (value === 7)
+                isFlower = true;
+        });
+        return isFlower;
     }
 
     onDotClicked(dot) {
@@ -172,7 +216,13 @@ export default class GameScene extends Phaser.Scene {
                 } else if (this.selection.dots.length >= GameConfig.Gameplay.MinLoopAmount && dot === firstSeletedDot) {
                     this.addToSelection(dot);
                     this.selection.isLoop = true;
-                    this.dotGrid.setColorIdLightened(this.selection.colorId, true);
+                    this.selection.isFlower = this.isDotListAFlower(this.selection.dots, true);
+
+                    if (!this.selection.isFlower) {
+                        this.dotGrid.setColorIdLightened(this.selection.colorId, true);
+                    } else {
+                        this.dotGrid.setColorsFlowered(true);
+                    }
                 }
             } else if (dot.row === lastSelectedDot.row && dot.column === lastSelectedDot.column) {
                 let lastDot = this.selection.dots.pop();
@@ -180,6 +230,7 @@ export default class GameScene extends Phaser.Scene {
                 if (lastDot === firstSeletedDot && this.selection.isLoop) {
                     this.selection.isLoop = false;
                     this.dotGrid.setColorIdLightened(this.selection.colorId, false);
+                    this.dotGrid.setColorsFlowered(false);
                 } else {
                     lastDot.unselect();
                 }
@@ -195,14 +246,16 @@ export default class GameScene extends Phaser.Scene {
             this.resetSelection();
             return;
         }
-        
-        if (this.selection.isLoop) {
+
+        if (this.selection.isFlower) {
+            this.dotGrid.explodeClear(true);
+        } else if (this.selection.isLoop) {
             this.dotGrid.removeDotsByColorId(this.selection.colorId);
         } else {
             this.dotGrid.removeDots(this.selection.dots);
         }
 
-        this.scoreKeeper.addScore(this.selection.dots, this.selection.isLoop);
+        this.scoreKeeper.addScore(this.selection.dots, this.selection.isLoop, this.selection.isFlower);
         this.resetSelection();
     }
 }

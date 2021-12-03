@@ -10,6 +10,7 @@ export const GameConfig = {
         MinLineCompletionAmount: 2,
         ScorePerDot: 5,
         ScoreLoopMultiplier: 3,
+        ScoreFlowerMultiplier: 7,
         GameLengthTime: 30000,
     }
 }
