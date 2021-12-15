@@ -12,6 +12,8 @@ export default class DotGrid {
         this.dotSpacingX = this.config.width / (this.config.numColumns + 0.5);
         this.dotSpacingY = this.config.height / this.config.numRows;
 
+        this.dotBuckets = {};
+
         this.initializeGrid();
     }
 
@@ -69,23 +71,6 @@ export default class DotGrid {
         }
     }
 
-    createDot() {
-        let dot = new Dot(this.scene, 0, 0, this.config.dotScale);
-        dot.setColorByIndex(this.getRandomDotColorIdx());
-
-        dot.on('pointerdown', () => {
-            this.scene.onDotClicked(dot);
-        });
-
-        dot.on('pointerover', () => {
-            this.scene.onDotHovered(dot);
-        });
-
-        dot.enable();
-
-        return dot;        
-    }
-
     resumeRefill() {
         this.canRefill = true;
         if (this.refillTimer) {
@@ -100,9 +85,33 @@ export default class DotGrid {
         }
     }
 
+    createDot() {
+        let dot = new Dot(this.scene, 0, 0, this.config.dotScale);
+        dot.setColorByIndex(this.getRandomDotColorIdx());
+
+        dot.on('pointerdown', () => {
+            this.scene.onDotClicked(dot);
+        });
+
+        dot.on('pointerover', () => {
+            this.scene.onDotHovered(dot);
+        });
+
+        dot.enable();
+
+        if (!this.dotBuckets[dot.colorData.id])
+            this.dotBuckets[dot.colorData.id] = [];
+        this.dotBuckets[dot.colorData.id].push(dot);
+
+        return dot;        
+    }
+
     removeDot(dot) {
         this.grid[dot.row][dot.column].dot = null;
         dot.disable();
+
+        let bucketIdx = this.dotBuckets[dot.colorData.id].indexOf(dot);
+        this.dotBuckets[dot.colorData.id] = this.dotBuckets[dot.colorData.id].splice(bucketIdx, 1);
 
         this.moveDotsDownFromCell(dot.row, dot.column);
         
@@ -122,6 +131,9 @@ export default class DotGrid {
         dots.forEach(dot => {
             this.grid[dot.row][dot.column].dot = null;
             dot.disable();
+
+            let bucketIdx = this.dotBuckets[dot.colorData.id].indexOf(dot);
+            this.dotBuckets[dot.colorData.id] = this.dotBuckets[dot.colorData.id].splice(bucketIdx, 1);
 
             if (lowestRowsPerColumn[dot.column] < dot.row)
                 lowestRowsPerColumn[dot.column] = dot.row;
@@ -146,21 +158,16 @@ export default class DotGrid {
         for (let col = 0; col < this.config.numColumns; col++)
             lowestRowsPerColumn.push(-1);
         
-        for (let row = this.grid.length - 1; row >= 0; row--) {
-            let lowestRow = -1;
-        
-            for (let col = 0; col < this.grid[row].length; col++) {
-                let dot = this.grid[row][col].dot;
-                if (dot && dot.colorData.id === id) {
-                    this.grid[row][col].dot = null;
-                    dot.disable(true);
+        let bucket = this.dotBuckets[id];
+        bucket.forEach(dot => {
+            this.grid[dot.row][dot.column].dot = null;
+            dot.disable(true);
 
-                    // if lowest row is not -1 then it has already been set
-                    if (lowestRowsPerColumn[col] < row)
-                        lowestRowsPerColumn[col] = row;
-                }
-            }
-        }
+            // if lowest row is not -1 then it has already been set
+            if (lowestRowsPerColumn[dot.column] < dot.row)
+                lowestRowsPerColumn[dot.column] = dot.row;
+        });
+        this.dotBuckets[id] = [];
 
         lowestRowsPerColumn.forEach((row, idx) => {
             if (row == -1)
